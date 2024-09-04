@@ -30,7 +30,7 @@ const ChatWindow = ({ loggedInUser, onClose }) => {
       setInput(''); // Clear input field after sending
   
       // Send the message to the PHP backend
-      fetch('http://localhost:8000/index.php', {
+      fetch('https://my-backend-service-y4up.onrender.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

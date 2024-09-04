@@ -40,7 +40,7 @@ const Login = ({ onLogin }) => {
             let googleEmail = data.user.email;
             let mappedUser;
 
-            // Map Google email to predefined users including sujitahire25 as a valid user
+            // Map Google email to predefined users
             if (googleEmail === 'testuser1@gmail.com') {
               mappedUser = 'Titan';
             } else if (googleEmail === 'testuser2@gmail.com') {
@@ -48,15 +48,18 @@ const Login = ({ onLogin }) => {
             } else if (googleEmail === 'testuser3@gmail.com') {
               mappedUser = 'DRL';
             } else if (googleEmail === 'sujitahire25@gmail.com') {
-              mappedUser = 'Sujit'; // Map this email to give access like Titan, Dcathelon, DRL
+              mappedUser = 'Sujit'; // Map to Sujit user
             } else {
               alert('Access denied: This Google account is not authorized.');
               return;
             }
 
-            // Treat the Google user as one of the predefined users (Titan, Dcathelon, DRL)
+            // Treat the Google user as one of the predefined users
             setUser(mappedUser);
             localStorage.setItem('loggedInUser', mappedUser); // Store the mapped user in localStorage
+
+            // Redirect to the website after successful login
+            window.location.reload();  // Reload the page to update the UI automatically
           } else {
             console.error('Error: No email found in the user data:', data);
           }
@@ -104,6 +107,7 @@ const Login = ({ onLogin }) => {
 };
 
 export default Login;
+
 
 
 

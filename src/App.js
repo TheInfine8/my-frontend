@@ -14,7 +14,7 @@ const App = () => {
     }
   }, []);
 
-  // Handle login for predefined users
+  // Handle login for predefined users (Titan, Dcathelon, DRL)
   const handleLogin = (username) => {
     const validUsers = ['Titan', 'Dcathelon', 'DRL'];
     if (validUsers.includes(username)) {
@@ -42,7 +42,7 @@ const App = () => {
           <Chatbot loggedInUser={user} />
         </div>
       ) : (
-        // Google Login is handled in Login.js, so it's not needed here
+        // Google Login and traditional login are handled in Login.js
         <Login onLogin={handleLogin} />
       )}
     </div>
@@ -50,3 +50,4 @@ const App = () => {
 };
 
 export default App;
+

@@ -33,11 +33,34 @@ const Login = ({ onLogin }) => {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          setUser(data.user);
           console.log('User logged in successfully:', data);
+
+          // Map Google email to predefined users
+          let googleEmail = data.user.email;
+          let mappedUser;
+
+          if (googleEmail === 'testuser1@gmail.com') {
+            mappedUser = 'Titan';
+          } else if (googleEmail === 'testuser2@gmail.com') {
+            mappedUser = 'Dcathelon';
+          } else if (googleEmail === 'testuser3@gmail.com') {
+            mappedUser = 'DRL';
+          } else {
+            // Default handling for other users, you can either deny access or assign a default role
+            alert('Access denied: No mapped user for this Google account.');
+            return;
+          }
+
+          // Treat the Google user as one of the predefined users (Titan, Dcathelon, or DRL)
+          setUser(mappedUser);
+          localStorage.setItem('loggedInUser', mappedUser); // Store the mapped user in localStorage
+
         } else {
           console.error('Login failed:', data.message);
         }
+      })
+      .catch((error) => {
+        console.error('Google login failed:', error);
       });
   };
 
@@ -76,4 +99,5 @@ const Login = ({ onLogin }) => {
 };
 
 export default Login;
+
 

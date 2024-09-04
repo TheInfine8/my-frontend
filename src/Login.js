@@ -40,7 +40,7 @@ const Login = ({ onLogin }) => {
             let googleEmail = data.user.email;
             let mappedUser;
 
-            // Map Google email to predefined users
+            // Map Google email to predefined users including sujitahire25 as a valid user
             if (googleEmail === 'testuser1@gmail.com') {
               mappedUser = 'Titan';
             } else if (googleEmail === 'testuser2@gmail.com') {
@@ -48,14 +48,13 @@ const Login = ({ onLogin }) => {
             } else if (googleEmail === 'testuser3@gmail.com') {
               mappedUser = 'DRL';
             } else if (googleEmail === 'sujitahire25@gmail.com') {
-              // Add your test email here and map it to one of the predefined users
-              mappedUser = 'Titan';  // Or map to Dcathelon, DRL, etc.
+              mappedUser = 'Sujit'; // Map this email to give access like Titan, Dcathelon, DRL
             } else {
-              alert('Access denied: No mapped user for this Google account.');
+              alert('Access denied: This Google account is not authorized.');
               return;
             }
 
-            // Treat the Google user as one of the predefined users (Titan, Dcathelon, or DRL)
+            // Treat the Google user as one of the predefined users (Titan, Dcathelon, DRL)
             setUser(mappedUser);
             localStorage.setItem('loggedInUser', mappedUser); // Store the mapped user in localStorage
           } else {
@@ -105,6 +104,7 @@ const Login = ({ onLogin }) => {
 };
 
 export default Login;
+
 
 
 

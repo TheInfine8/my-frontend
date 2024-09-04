@@ -5,6 +5,7 @@ const ChatWindow = ({ loggedInUser, onClose }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const chatWindowRef = useRef(null);
+  const [lastMessageId, setLastMessageId] = useState(null); // Keep track of the last processed message
 
   useEffect(() => {
     // Listen for clicks outside the chat window to close it
@@ -21,22 +22,33 @@ const ChatWindow = ({ loggedInUser, onClose }) => {
     };
   }, [onClose]);
 
-  // Poll the backend for any new messages for the loggedInUser (responses from Teams)
-  useEffect(() => {
-    const pollForResponses = setInterval(() => {
-      fetch(`https://my-backend-service-y4up.onrender.com/get-responses.php?user=${loggedInUser}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.messages && data.messages.length > 0) {
-            // Add the messages from Teams to the chat window
-            setMessages(prevMessages => [...prevMessages, ...data.messages.map(msg => ({ user: 'Teams', message: msg }))]);
+  // Function to fetch responses from the backend
+  const fetchResponses = () => {
+    fetch(`https://my-backend-service-y4up.onrender.com/get-responses.php?user=${loggedInUser}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.messages) {
+          // Filter messages to avoid duplicates
+          const newMessages = data.messages.filter((msg) => msg.id !== lastMessageId);
+          if (newMessages.length > 0) {
+            setLastMessageId(newMessages[newMessages.length - 1].id); // Track last message ID
+            setMessages((prevMessages) => [
+              ...prevMessages, 
+              ...newMessages.map(msg => ({ user: 'Teams', message: msg.message }))
+            ]); // Append new messages from Teams
           }
-        })
-        .catch(error => console.error('Error fetching responses:', error));
-    }, 5000); // Poll every 5 seconds
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching responses:', error);
+      });
+  };
 
-    return () => clearInterval(pollForResponses); // Cleanup on component unmount
-  }, [loggedInUser]);
+  useEffect(() => {
+    // Poll for new messages every 5 seconds
+    const interval = setInterval(fetchResponses, 5000);
+    return () => clearInterval(interval); // Cleanup on component unmount
+  }, [lastMessageId]);
 
   const handleSend = () => {
     if (input.trim()) {
@@ -54,24 +66,24 @@ const ChatWindow = ({ loggedInUser, onClose }) => {
         },
         body: JSON.stringify(newMessage),
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.status === "success") {
-            console.log(data.message);
-          } else {
-            console.error('Error:', data.message);
-            setMessages((prevMessages) => [...prevMessages, { user: 'System', message: 'Failed to send message' }]);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.status === "success") {
+          console.log('Message sent successfully:', data.message);
+        } else {
+          console.error('Error:', data.message);
           setMessages((prevMessages) => [...prevMessages, { user: 'System', message: 'Failed to send message' }]);
-        });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        setMessages((prevMessages) => [...prevMessages, { user: 'System', message: 'Failed to send message' }]);
+      });
     } else {
       console.warn('Cannot send an empty message');
     }
@@ -113,7 +125,6 @@ const ChatWindow = ({ loggedInUser, onClose }) => {
 };
 
 export default ChatWindow;
-
 
 
 

@@ -28,12 +28,11 @@ const ChatWindow = ({ loggedInUser, onClose }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.messages) {
-          // Filter messages to avoid duplicates
-          const newMessages = data.messages.filter((msg) => msg.id !== lastMessageId);
+          const newMessages = data.messages.filter((msg) => msg.id !== lastMessageId); // Avoid duplicates
           if (newMessages.length > 0) {
             setLastMessageId(newMessages[newMessages.length - 1].id); // Track last message ID
             setMessages((prevMessages) => [
-              ...prevMessages, 
+              ...prevMessages,
               ...newMessages.map(msg => ({ user: 'Teams', message: msg.message }))
             ]); // Append new messages from Teams
           }
@@ -55,7 +54,7 @@ const ChatWindow = ({ loggedInUser, onClose }) => {
       const newMessage = { user: loggedInUser, message: input };
 
       // Update messages immediately in the user's chat window
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessages((prevMessages) => [...prevMessages, { user: loggedInUser, message: input }]);
       setInput(''); // Clear input field after sending
 
       // Send the message to the PHP backend
@@ -125,6 +124,7 @@ const ChatWindow = ({ loggedInUser, onClose }) => {
 };
 
 export default ChatWindow;
+
 
 
 

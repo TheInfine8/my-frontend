@@ -35,34 +35,12 @@ const Login = ({ onLogin }) => {
         if (data.success) {
           console.log('User logged in successfully:', data);
 
-          // Check if the user object is defined
-          if (data.user && data.user.email) {
-            let googleEmail = data.user.email;
-            let mappedUser;
+          // Automatically treat any authenticated Google user as logged in
+          setUser(data.user.name); // Set the user's name (or email) as the logged-in user
+          localStorage.setItem('loggedInUser', data.user.name); // Store the user in localStorage
 
-            // Map Google email to predefined users
-            if (googleEmail === 'testuser1@gmail.com') {
-              mappedUser = 'Titan';
-            } else if (googleEmail === 'testuser2@gmail.com') {
-              mappedUser = 'Dcathelon';
-            } else if (googleEmail === 'testuser3@gmail.com') {
-              mappedUser = 'DRL';
-            } else if (googleEmail === 'sujitahire25@gmail.com') {
-              mappedUser = 'Sujit'; // Map to Sujit user
-            } else {
-              alert('Access denied: This Google account is not authorized.');
-              return;
-            }
-
-            // Treat the Google user as one of the predefined users
-            setUser(mappedUser);
-            localStorage.setItem('loggedInUser', mappedUser); // Store the mapped user in localStorage
-
-            // Redirect to the website after successful login
-            window.location.reload();  // Reload the page to update the UI automatically
-          } else {
-            console.error('Error: No email found in the user data:', data);
-          }
+          // Redirect to the website after successful login
+          window.location.reload(); // Reload the page to update the UI automatically
         } else {
           console.error('Login failed:', data.message);
         }
@@ -107,6 +85,7 @@ const Login = ({ onLogin }) => {
 };
 
 export default Login;
+
 
 
 

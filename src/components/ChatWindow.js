@@ -21,40 +21,57 @@ const ChatWindow = ({ loggedInUser, onClose }) => {
     };
   }, [onClose]);
 
+  // Poll the backend for any new messages for the loggedInUser (responses from Teams)
+  useEffect(() => {
+    const pollForResponses = setInterval(() => {
+      fetch(`https://my-backend-service-y4up.onrender.com/get-responses.php?user=${loggedInUser}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.messages && data.messages.length > 0) {
+            // Add the messages from Teams to the chat window
+            setMessages(prevMessages => [...prevMessages, ...data.messages.map(msg => ({ user: 'Teams', message: msg }))]);
+          }
+        })
+        .catch(error => console.error('Error fetching responses:', error));
+    }, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(pollForResponses); // Cleanup on component unmount
+  }, [loggedInUser]);
+
   const handleSend = () => {
     if (input.trim()) {
-      const newMessage = { user: loggedInUser, message: input }; 
-  
+      const newMessage = { user: loggedInUser, message: input };
+
       // Update messages immediately in the user's chat window
       setMessages((prevMessages) => [...prevMessages, newMessage]);
       setInput(''); // Clear input field after sending
-  
+
       // Send the message to the PHP backend
-      fetch('https://my-backend-service-y4up.onrender.com', {
+      fetch('https://my-backend-service-y4up.onrender.com/index.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newMessage),
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        if (data.status === "success") {
-          console.log(data.message);
-        } else {
-          console.error('Error:', data.message);
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.status === "success") {
+            console.log(data.message);
+          } else {
+            console.error('Error:', data.message);
+            setMessages((prevMessages) => [...prevMessages, { user: 'System', message: 'Failed to send message' }]);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
           setMessages((prevMessages) => [...prevMessages, { user: 'System', message: 'Failed to send message' }]);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        setMessages((prevMessages) => [...prevMessages, { user: 'System', message: 'Failed to send message' }]);
-      });
+        });
     } else {
       console.warn('Cannot send an empty message');
     }
@@ -96,6 +113,7 @@ const ChatWindow = ({ loggedInUser, onClose }) => {
 };
 
 export default ChatWindow;
+
 
 
 

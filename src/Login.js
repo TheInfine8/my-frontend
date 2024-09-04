@@ -35,26 +35,29 @@ const Login = ({ onLogin }) => {
         if (data.success) {
           console.log('User logged in successfully:', data);
 
-          // Map Google email to predefined users
-          let googleEmail = data.user.email;
-          let mappedUser;
+          // Check if the user object is defined
+          if (data.user && data.user.email) {
+            let googleEmail = data.user.email;
+            let mappedUser;
 
-          if (googleEmail === 'testuser1@gmail.com') {
-            mappedUser = 'Titan';
-          } else if (googleEmail === 'testuser2@gmail.com') {
-            mappedUser = 'Dcathelon';
-          } else if (googleEmail === 'testuser3@gmail.com') {
-            mappedUser = 'DRL';
+            // Map Google email to predefined users
+            if (googleEmail === 'testuser1@gmail.com') {
+              mappedUser = 'Titan';
+            } else if (googleEmail === 'testuser2@gmail.com') {
+              mappedUser = 'Dcathelon';
+            } else if (googleEmail === 'testuser3@gmail.com') {
+              mappedUser = 'DRL';
+            } else {
+              alert('Access denied: No mapped user for this Google account.');
+              return;
+            }
+
+            // Treat the Google user as one of the predefined users (Titan, Dcathelon, or DRL)
+            setUser(mappedUser);
+            localStorage.setItem('loggedInUser', mappedUser); // Store the mapped user in localStorage
           } else {
-            // Default handling for other users, you can either deny access or assign a default role
-            alert('Access denied: No mapped user for this Google account.');
-            return;
+            console.error('Error: No email found in the user data:', data);
           }
-
-          // Treat the Google user as one of the predefined users (Titan, Dcathelon, or DRL)
-          setUser(mappedUser);
-          localStorage.setItem('loggedInUser', mappedUser); // Store the mapped user in localStorage
-
         } else {
           console.error('Login failed:', data.message);
         }
@@ -99,5 +102,6 @@ const Login = ({ onLogin }) => {
 };
 
 export default Login;
+
 
 

@@ -47,6 +47,9 @@ const Login = ({ onLogin }) => {
               mappedUser = 'Dcathelon';
             } else if (googleEmail === 'testuser3@gmail.com') {
               mappedUser = 'DRL';
+            } else if (googleEmail === 'sujitahire25@gmail.com') {
+              // Add your test email here and map it to one of the predefined users
+              mappedUser = 'Titan';  // Or map to Dcathelon, DRL, etc.
             } else {
               alert('Access denied: No mapped user for this Google account.');
               return;
@@ -102,6 +105,7 @@ const Login = ({ onLogin }) => {
 };
 
 export default Login;
+
 
 
 
